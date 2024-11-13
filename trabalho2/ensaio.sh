@@ -13,7 +13,7 @@ function get_factor_or_rehearsal() {
     $0 ~ factor_or_rehearsal {
         # Após encontrar a linha com "FATORES:" ou "REHEARSAL:", comece a ler as linhas subsequentes
         while (getline) {
-            if ($0 ~ factor_name) {
+            if ($1 == factor_name) {
                 # Imprimir a partir do terceiro campo
                 for (i = 3; i <= NF; i++) {
                     printf "%s ", $i
@@ -22,7 +22,7 @@ function get_factor_or_rehearsal() {
                 break
             }
         }
-    }' "$command_file"
+    }' "$command_file" | sed -E 's/[^0-9 *]+|,//g'
 }
 
 function get_factor() {
@@ -32,12 +32,10 @@ function get_factor() {
 }
 
 function get_rehearsal() {
+    # config file = the configuration file where is the rehearsals and factores
+    # rehearsal_name = the name of the rehearsal that you want to get of the file
     config_file=$1
-    factor_name=$2
-    get_factor_or_rehearsal "$config_file" "$factor_name" "ENSAIOS:"
+    rehearsal_name=$2
+    get_factor_or_rehearsal "$config_file" "$rehearsal_name" "ENSAIOS:"
 }
 
-# Exemplo de como você chamaria a função
-comando=$(get_command_runnable config.txt)
-
-get_rehearsal config.txt 1
