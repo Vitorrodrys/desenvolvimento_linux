@@ -38,7 +38,7 @@ function main() {
         echo "Rehearsal $rehearsal"
         expanded_rehearsal=$(expand_rehearsal_list $CONFIG_FILENAME $current_rehearsal)
         exec_rehearsal $config_file "$expanded_rehearsal"
-        echo "____________________________________________________________"
+        echo -e "____________________________________________________________\n\n\n\n\n"
         current_rehearsal=$((current_rehearsal + 1))
     done
 }
