@@ -2,8 +2,6 @@
 source ./rehearsal.sh
 source ./helper.sh
 
-CONFIG_FILENAME=config.txt
-
 function replace_rehearsal_params() {
     config_file=$1
     rehearsal_params=$2
@@ -36,7 +34,18 @@ function exec_rehearsal() {
         exe $command
     done <<< "$expanded_rehearsal"
 }
+function help() {
+    echo "usage: main.sh CONFIGFILE.TXT"
+    exit $1
+}
 function main() {
+    if [ "$1" == "-h" ];then
+        help 0
+    elif [ $# -lt 1 ];then
+        help 1
+    fi
+
+    CONFIG_FILENAME=$1
     current_rehearsal=1
     while exists_rehearsal $CONFIG_FILENAME $current_rehearsal; do
         echo "Rehearsal $rehearsal"
@@ -47,4 +56,4 @@ function main() {
     done
 }
 
-main 
+main $@ 
