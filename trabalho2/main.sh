@@ -1,39 +1,46 @@
 #!/bin/bash
-source ./ensaio.sh
+source ./rehearsal.sh
 source ./helper.sh
 
 CONFIG_FILENAME=config.txt
 
-function gen_commands() {
-    original_command=$(get_command_runnable $CONFIG_FILENAME)
-    current_script=$1
-    current_factor=$2
-    factors_options=$(get_factor $CONFIG_FILENAME $current_factor)
-    factor_option_number=1
-    for factor in $factors_options;do
-        new_command=$(echo $original_command | sed -E "s/$current_factor/$current_factor$factor_option_number/")
-        current_script="$current_script;$new_command"
+function replace_rehearsal_params() {
+    config_file=$1
+    rehearsal_params=$2
+
+    command=$(get_command_runnable $config_file)
+    factor=A
+    for param in $rehearsal_params; do
+        command=$(echo $command | sed "s/\\\$$factor/$param/")
+        factor=$(increment_factor $factor)
     done
-    echo $current_script
-}
-function generate_rehearsal_shell() {
-    #script=echo $A1 $B $C;echo $A2 $B $C
-    script="$(get_command_runnable config.txt);"
-    factor_char=A
-    for i in $(get_command_runnable config.txt);do
-        if echo $i | grep '\$';then
-            if [ ${i:1:1} == "*" ];then
-                script=$(gen_commands $script $factor_char)
-            fi
-            factor_char=$(increment_char $factor_char)
-        fi
-    done
-    echo $script
+    echo $command
 }
 
+function exe() {
+    echo "running now:"
+    echo "$@"
+    "$@"
+}
+
+function exec_rehearsal() {
+    config_file=$1
+    expanded_rehearsal=$2
+
+    while read -r rehearsal_params; do
+        command=$(replace_rehearsal_params $config_file "$rehearsal_params")
+        exe $command
+    done <<< "$expanded_rehearsal"
+}
 function main() {
     current_rehearsal=1
-
-   generate_rehearsal_shell
+    while exists_rehearsal $CONFIG_FILENAME $current_rehearsal; do
+        echo "Rehearsal $rehearsal"
+        expanded_rehearsal=$(expand_rehearsal_list $CONFIG_FILENAME $current_rehearsal)
+        exec_rehearsal $config_file "$expanded_rehearsal"
+        echo "____________________________________________________________"
+        current_rehearsal=$((current_rehearsal + 1))
+    done
 }
-main
+
+main 
