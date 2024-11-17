@@ -14,6 +14,12 @@ function is_an_element(){
     echo $factor_elements | grep -w $element > /dev/null 2>&1
     return $?
 }
+function factor_exists(){
+    config_file=$1
+    factor=$2
+
+    [ -n "$(get_factor $config_file $factor)" ]
+}
 function increment_char(){
     current=$1
     number=$2

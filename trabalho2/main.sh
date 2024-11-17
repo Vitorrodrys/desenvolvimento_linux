@@ -11,6 +11,10 @@ function replace_rehearsal_params() {
     command=$(get_command_runnable $config_file)
     factor=A
     for param in $rehearsal_params; do
+        if ! factor_exists $CONFIG_FILENAME $factor;then
+            echo "The factor $factor does not exists on factors specify"
+            exit 1
+        fi
         command=$(echo $command | sed "s/\\\$$factor/$param/")
         factor=$(increment_factor $factor)
     done
