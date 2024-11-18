@@ -1,4 +1,11 @@
 #!/bin/bash
+# Trabalha pratico 2 - Desenvolvimento em Linux
+#
+# Alunos:
+#   - Vitor Gabriel Correia Rodrigues - 0071054
+#   - Higor Gabriel Lino Silva - 0070308
+
+
 source ./rehearsal.sh
 source ./helper.sh
 
@@ -20,10 +27,26 @@ function replace_rehearsal_params() {
 }
 
 function exe() {
-    echo "running now:"
+    start_time=$(date +%s%N) # Captura o tempo de início em nanosegundos
+    echo "Running now:"
     echo "$@"
     "$@"
+    end_time=$(date +%s%N)
+
+    # Calcula o tempo decorrido em milissegundos
+    elapsed_ns=$((end_time - start_time))
+    elapsed_ms=$((elapsed_ns / 1000000))
+
+    # Converte para o formato horas:minutos:segundos.milisegundos
+    hours=$((elapsed_ms / 3600000))
+    minutes=$(((elapsed_ms / 60000) % 60))
+    seconds=$(((elapsed_ms / 1000) % 60))
+    milliseconds=$((elapsed_ms % 1000))
+
+    # Exibe o tempo formatado
+    printf "Execution time: %02d:%02d:%02d.%03d\n" "$hours" "$minutes" "$seconds" "$milliseconds"
 }
+
 
 function exec_rehearsal() {
     config_file=$1
@@ -35,16 +58,11 @@ function exec_rehearsal() {
     done <<< "$expanded_rehearsal"
 }
 function help() {
-    echo "usage: main.sh CONFIGFILE.TXT"
+    echo "usage: main.sh CONFIGFILE.TXT SAIDA.TXT"
     exit $1
 }
-function main() {
-    if [ "$1" == "-h" ];then
-        help 0
-    elif [ $# -lt 1 ];then
-        help 1
-    fi
 
+function worker() {
     CONFIG_FILENAME=$1
     current_rehearsal=1
     while exists_rehearsal $CONFIG_FILENAME $current_rehearsal; do
@@ -54,6 +72,17 @@ function main() {
         echo -e "____________________________________________________________\n\n\n\n\n"
         current_rehearsal=$((current_rehearsal + 1))
     done
+}
+function main() {
+    if [ "$1" == "-h" ];then
+        help 0
+    elif [ $# -lt 2 ];then
+        help 1
+    fi
+
+    CONFIG_FILENAME=$1
+    output_filename=$2
+    worker $CONFIG_FILENAME > $output_filename
 }
 
 main $@ 
