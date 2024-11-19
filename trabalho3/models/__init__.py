@@ -1,9 +1,7 @@
-from db import create_db_session
+from db import create_all
 
 from .base import Base
-from .game import Game, GameDeveloper, Platform
+from .game import Game, GameDeveloper, Platform, game_gamedev_link
 
 
-_, engine = create_db_session()
-
-Base.metadata.create_all(engine)
+create_all(Base)
