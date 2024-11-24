@@ -51,6 +51,8 @@ class CRUD(Generic[ModelType]):
         if not existing_data:
             return None
         for key, value in new_data.items():
+            if not hasattr(existing_data, key):
+                raise AttributeError(f"Attribute {key} not found in {self.__model}")
             setattr(existing_data, key, value)
         self._db_session.commit()
         self._db_session.refresh(existing_data)
