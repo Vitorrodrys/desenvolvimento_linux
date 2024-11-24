@@ -7,12 +7,10 @@ ModelType = TypeVar("ModelType", bound=Base)
 
 class CRUD(Generic[ModelType]):
 
+    _db_session = create_db_session()
+
     def __init__(self, model: Type[ModelType]):
         self.__model = model
-        self._db_session = create_db_session()
-
-    def __del__(self):
-        self._db_session.close()
 
     def create(self, data: ModelType) -> ModelType:
         self._db_session.add(data)
