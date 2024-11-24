@@ -9,33 +9,33 @@ class CRUD(Generic[ModelType]):
 
     def __init__(self, model: Type[ModelType]):
         self.__model = model
+        self._db_session = create_db_session()
+
+    def __del__(self):
+        self._db_session.close()
 
     def create(self, data: ModelType) -> ModelType:
-        with create_db_session() as session:
-            session.add(data)
-            session.commit()
-            session.refresh(data)
-            return data
+        self._db_session.add(data)
+        self._db_session.commit()
+        self._db_session.refresh(data)
+        return data
 
     def remove(self, data_id: int) -> Optional[ModelType]:
-        with create_db_session() as session:
-            data = session.get(self.__model, data_id)
-            if not data:
-                return None
-            session.delete(data)
-            session.commit()
-            return data
+        data = self._db_session.get(self.__model, data_id)
+        if not data:
+            return None
+        self._db_session.delete(data)
+        self._db_session.commit()
+        return data
 
     def get(self, data_id: int) -> Optional[ModelType]:
-        with create_db_session() as session:
-            return session.get(self.__model, data_id)
+        return self._db_session.get(self.__model, data_id)
 
     def update(self, data: ModelType) -> ModelType:
-        with create_db_session() as session:
-            updated_data = session.merge(data)
-            session.commit()
-            session.refresh(updated_data)
-            return updated_data
+        updated_data = self._db_session.merge(data)
+        self._db_session.commit()
+        self._db_session.refresh(updated_data)
+        return updated_data
 
     def update_fields(self, data_id: int, new_data: dict) -> Optional[ModelType]:
         """
@@ -47,12 +47,11 @@ class CRUD(Generic[ModelType]):
             }
         only the fields name and description will be updated into object with data_id.
         """
-        with create_db_session() as session:
-            existing_data = session.get(self.__model, data_id)
-            if not existing_data:
-                return None
-            for key, value in new_data.items():
-                setattr(existing_data, key, value)
-            session.commit()
-            session.refresh(existing_data)
-            return existing_data
+        existing_data = self._db_session.get(self.__model, data_id)
+        if not existing_data:
+            return None
+        for key, value in new_data.items():
+            setattr(existing_data, key, value)
+        self._db_session.commit()
+        self._db_session.refresh(existing_data)
+        return existing_data
