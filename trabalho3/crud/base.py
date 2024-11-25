@@ -29,6 +29,9 @@ class CRUD(Generic[ModelType]):
     def get(self, data_id: int) -> Optional[ModelType]:
         return self._db_session.get(self.__model, data_id)
 
+    def get_all(self) -> list[ModelType]:
+        return self._db_session.query(self.__model).all()
+
     def update(self, data: ModelType) -> ModelType:
         updated_data = self._db_session.merge(data)
         self._db_session.commit()
