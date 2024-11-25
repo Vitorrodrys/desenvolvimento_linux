@@ -2,10 +2,12 @@ import gi
 gi.require_version("Gtk", "4.0")
 from gi.repository import Gtk
 
+from .default_configs import HEIGTH, WIDTH
+from .register_window import RegisterWindow
 class MainWindow(Gtk.ApplicationWindow):
     def __init__(self, app):
         super().__init__(title="Biblioteca de Jogos", application=app)
-        self.set_default_size(800, 600)
+        self.set_default_size(HEIGTH, WIDTH)
 
         # Criar um container vertical
         vbox = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=10)
@@ -58,6 +60,7 @@ class MainWindow(Gtk.ApplicationWindow):
         
 
         buttonAdicionar = Gtk.Button(label="Adicionar")
+        buttonAdicionar.connect("clicked", self.on_buttonAdicionar_clicked)
         vboxCRUDButtons.append(buttonAdicionar)
 
         buttonRemover = Gtk.Button(label="Remover")
@@ -75,6 +78,10 @@ class MainWindow(Gtk.ApplicationWindow):
         scroll_text.set_child(self.textview)
         vboxCRUDButtons.append(scroll_text)
 
+    def on_buttonAdicionar_clicked(self, button):
+        new_window = RegisterWindow()
+        new_window.present()
+        
     def on_buttonBuscar_clicked(self, button):
         print("Busca realizada!")
 
