@@ -18,6 +18,20 @@ class RegisterWindow(Gtk.Window):
         entry = Gtk.Entry()
         entry.set_placeholder_text("Nome do jogo")
         vbox.append(entry)
+        self.__gamename_entry = entry
+
+        # Game Description
+        entry = Gtk.Entry()
+        entry.set_placeholder_text("Descrição do jogo")
+        vbox.append(entry)
+        self.__gamedescription_entry = entry
+
+        # Game priece
+        entry = Gtk.Entry()
+        entry.set_placeholder_text("Preço do jogo")
+        vbox.append(entry)
+        self.__gameprice_entry = entry
+        
 
         # Botão de salvar
         button_save = Gtk.Button(label="Salvar")
