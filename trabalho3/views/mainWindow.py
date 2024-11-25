@@ -12,21 +12,45 @@ class MainWindow(Gtk.ApplicationWindow):
         vbox = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=10)
         self.set_child(vbox)
 
+        hboxBusca = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=10)
+        vbox.append(hboxBusca)
 
-        # Adicionar botões
-        button1 = Gtk.Button(label="Botão 1")
-        button1.connect("clicked", self.on_button1_clicked)
-        vbox.append(button1)
+        entry = Gtk.Entry()
+        entry.set_placeholder_text("Pesquisar jogos...")
+        hboxBusca.append(entry)
 
-        button2 = Gtk.Button(label="Botão 2")
-        button2.connect("clicked", self.on_button2_clicked)
-        vbox.append(button2)
+        buttonBuscar = Gtk.Button(label="Buscar")
+        buttonBuscar.connect("clicked", self.on_buttonBuscar_clicked)
+        hboxBusca.append(buttonBuscar)
+
+        hboxMainContent = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=10)
+        vbox.append(hboxMainContent)
+
+        vboxJogos = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=10)
+        hboxMainContent.append(vboxJogos)
+
+
+        vboxCRUDButtons = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=10)
+        hboxMainContent.append(vboxCRUDButtons)
+
+
+        # # Adicionar botões
+        # button1 = Gtk.Button(label="Botão 1")
+        # button1.connect("clicked", self.on_button1_clicked)
+        # vbox.append(button1)
+
+        # button2 = Gtk.Button(label="Botão 2")
+        # button2.connect("clicked", self.on_button2_clicked)
+        # vbox.append(button2)
 
     def on_button1_clicked(self, button):
         print("Botão 1 clicado!")
 
     def on_button2_clicked(self, button):
         print("Botão 2 clicado!")
+
+    def on_buttonBuscar_clicked(self, button):
+        print("Busca realizada!")
 
 class MyApplication(Gtk.Application):
     def __init__(self):
