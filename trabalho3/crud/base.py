@@ -32,6 +32,9 @@ class CRUD(Generic[ModelType]):
     def get_all(self) -> list[ModelType]:
         return self._db_session.query(self.__model).all()
 
+    def get_by_name(self, name:str) -> ModelType:
+        return self._db_session.query(self.__model).filter(self.__model.name.like(f"%{name}%")).all()
+
     def update(self, data: ModelType) -> ModelType:
         updated_data = self._db_session.merge(data)
         self._db_session.commit()
