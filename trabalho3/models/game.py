@@ -53,4 +53,3 @@ class Game(Base):
     genre: Mapped[GameGenre] = mapped_column(String(50))
     description: Mapped[Optional[str]] = mapped_column(String(500))
     price: Mapped[float] = mapped_column(Float())
-    game_icone: Mapped[str] = mapped_column(String(1000))
