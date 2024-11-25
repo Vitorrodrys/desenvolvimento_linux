@@ -4,19 +4,19 @@ from gi.repository import Gtk
 
 class MainWindow(Gtk.ApplicationWindow):
     def __init__(self, app):
-        super().__init__(title="Layout com Gtk.Box", application=app)
-        self.set_title("Biblioteca de Jogos")
+        super().__init__(title="Biblioteca de Jogos", application=app)
         self.set_default_size(800, 600)
 
-        # Criar um container horizontal
+        # Criar um container vertical
         vbox = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=10)
         self.set_child(vbox)
-        #vbox.set_halign(Gtk.Align.CENTER)  # Centralizar os elementos verticalmente
 
+        # Barra de busca
         hboxBusca = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=10)
         vbox.append(hboxBusca)
         hboxBusca.set_halign(Gtk.Align.CENTER)
-        hboxBusca.set_margin_bottom(15)
+        hboxBusca.set_margin_bottom(10)
+        hboxBusca.set_margin_top(10)
 
         entry = Gtk.Entry()
         entry.set_placeholder_text("Pesquisar jogos...")
@@ -26,53 +26,66 @@ class MainWindow(Gtk.ApplicationWindow):
         buttonBuscar.connect("clicked", self.on_buttonBuscar_clicked)
         hboxBusca.append(buttonBuscar)
 
+        # Área principal
         hboxMainContent = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=10)
         vbox.append(hboxMainContent)
 
-        # Caixa com a lista de jogos dentro de uma área rolável
-        vboxJogos = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=10)
+        # Lista de jogos em uma área rolável
+        listbox = Gtk.ListBox()
+        listbox.set_selection_mode(Gtk.SelectionMode.SINGLE)
+        listbox.connect("row-activated", self.on_row_selected)
+
         scroll = Gtk.ScrolledWindow()
         scroll.set_policy(Gtk.PolicyType.AUTOMATIC, Gtk.PolicyType.AUTOMATIC)
-        scroll.set_child(vboxJogos)
-        scroll.set_vexpand(True)  # Permitir que a área rolável cresça verticalmente
-        scroll.set_size_request(350, 50)
+        scroll.set_child(listbox)
+        scroll.set_vexpand(True)
+        scroll.set_size_request(390, 50)
         hboxMainContent.append(scroll)
+        hboxMainContent.set_margin_start(10)
+        hboxMainContent.set_margin_end(10)
+        hboxMainContent.set_margin_bottom(10)
 
         # Adicionar itens de exemplo à lista de jogos
         for i in range(20):  # Exemplo com 20 jogos
-            jogo_label = Gtk.Label(label=f"Jogo {i + 1}")
-            vboxJogos.append(jogo_label)
+            row = Gtk.ListBoxRow()
+            label = Gtk.Label(label=f"Jogo {i + 1}", xalign=0)
+            row.set_child(label)
+            listbox.append(row)
 
-
-        # Botões CRUD
+        # Botões CRUD e área de texto
         vboxCRUDButtons = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=10)
         hboxMainContent.append(vboxCRUDButtons)
+        
 
-        # Botões de exemplo
         buttonAdicionar = Gtk.Button(label="Adicionar")
         vboxCRUDButtons.append(buttonAdicionar)
 
         buttonRemover = Gtk.Button(label="Remover")
         vboxCRUDButtons.append(buttonRemover)
 
+        # Caixa de texto para informações do jogo
+        scroll_text = Gtk.ScrolledWindow()
+        scroll_text.set_policy(Gtk.PolicyType.AUTOMATIC, Gtk.PolicyType.AUTOMATIC)
+        scroll_text.set_vexpand(True)  # Permitir que a área cresça verticalmente
+        scroll_text.set_size_request(390, 100)  # Tamanho inicial da área de texto
 
-        # # Adicionar botões
-        # button1 = Gtk.Button(label="Botão 1")
-        # button1.connect("clicked", self.on_button1_clicked)
-        # vbox.append(button1)
-
-        # button2 = Gtk.Button(label="Botão 2")
-        # button2.connect("clicked", self.on_button2_clicked)
-        # vbox.append(button2)
-
-    def on_button1_clicked(self, button):
-        print("Botão 1 clicado!")
-
-    def on_button2_clicked(self, button):
-        print("Botão 2 clicado!")
+        self.textview = Gtk.TextView()  # Armazenar como atributo para uso posterior
+        self.textview.set_editable(False)  # Tornar somente leitura
+        self.textview.set_wrap_mode(Gtk.WrapMode.WORD)  # Quebra automática de linha
+        scroll_text.set_child(self.textview)
+        vboxCRUDButtons.append(scroll_text)
 
     def on_buttonBuscar_clicked(self, button):
         print("Busca realizada!")
+
+    def on_row_selected(self, listbox, row):
+        # Obter o texto do item selecionado
+        label = row.get_child()
+        texto = f"Informações do jogo selecionado:\n\n{label.get_text()}"
+
+        # Atualizar o conteúdo da TextView
+        buffer = self.textview.get_buffer()
+        buffer.set_text(texto)
 
 class MyApplication(Gtk.Application):
     def __init__(self):
