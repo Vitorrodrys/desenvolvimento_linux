@@ -101,7 +101,3 @@ class MyApplication(Gtk.Application):
     def do_activate(self):
         win = MainWindow(self)
         win.present()
-
-if __name__ == "__main__":
-    app = MyApplication()
-    app.run()

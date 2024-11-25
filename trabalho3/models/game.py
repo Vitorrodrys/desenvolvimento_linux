@@ -40,7 +40,7 @@ class GameDeveloper(Base):
     __tablename__ = 'game_developers'
 
     id: Mapped[int] = mapped_column(primary_key=True)
-    name: Mapped[str] = mapped_column(String(50))
+    name: Mapped[str] = mapped_column(String(50), unique=True)
     games: Mapped[list["Game"]] = relationship("Game", back_populates="game_developer")
 
 class Game(Base):
