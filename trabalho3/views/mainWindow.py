@@ -11,9 +11,12 @@ class MainWindow(Gtk.ApplicationWindow):
         # Criar um container horizontal
         vbox = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=10)
         self.set_child(vbox)
+        #vbox.set_halign(Gtk.Align.CENTER)  # Centralizar os elementos verticalmente
 
         hboxBusca = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=10)
         vbox.append(hboxBusca)
+        hboxBusca.set_halign(Gtk.Align.CENTER)
+        hboxBusca.set_margin_bottom(15)
 
         entry = Gtk.Entry()
         entry.set_placeholder_text("Pesquisar jogos...")
@@ -26,12 +29,31 @@ class MainWindow(Gtk.ApplicationWindow):
         hboxMainContent = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=10)
         vbox.append(hboxMainContent)
 
+        # Caixa com a lista de jogos dentro de uma área rolável
         vboxJogos = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=10)
-        hboxMainContent.append(vboxJogos)
+        scroll = Gtk.ScrolledWindow()
+        scroll.set_policy(Gtk.PolicyType.AUTOMATIC, Gtk.PolicyType.AUTOMATIC)
+        scroll.set_child(vboxJogos)
+        scroll.set_vexpand(True)  # Permitir que a área rolável cresça verticalmente
+        scroll.set_size_request(350, 50)
+        hboxMainContent.append(scroll)
+
+        # Adicionar itens de exemplo à lista de jogos
+        for i in range(20):  # Exemplo com 20 jogos
+            jogo_label = Gtk.Label(label=f"Jogo {i + 1}")
+            vboxJogos.append(jogo_label)
 
 
+        # Botões CRUD
         vboxCRUDButtons = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=10)
         hboxMainContent.append(vboxCRUDButtons)
+
+        # Botões de exemplo
+        buttonAdicionar = Gtk.Button(label="Adicionar")
+        vboxCRUDButtons.append(buttonAdicionar)
+
+        buttonRemover = Gtk.Button(label="Remover")
+        vboxCRUDButtons.append(buttonRemover)
 
 
         # # Adicionar botões
