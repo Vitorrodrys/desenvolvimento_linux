@@ -5,8 +5,8 @@ import models
 
 from .default_configs import HEIGTH, WIDTH
 
-class UpdateWindow(Gtk.Window):
 
+class UpdateWindow(Gtk.Window):
     def __mount_combobox_gamedeveloper(self, game: models.Game):
         game_developer_combo = Gtk.ComboBoxText()
         game_developers = crud.crud_game_developer.get_all()
@@ -31,10 +31,7 @@ class UpdateWindow(Gtk.Window):
         platform_combo.set_active(game.platform_id)
         return platform_combo
 
-    def __init__(
-        self,
-        game: models.Game
-    ):
+    def __init__(self, game: models.Game):
         super().__init__(title="Atualizar jogo")
         self.set_default_size(HEIGTH, WIDTH)
 
@@ -65,17 +62,17 @@ class UpdateWindow(Gtk.Window):
         vbox.append(entry)
         self.__gameprice_entry = entry
 
-        #game developer combo box
+        # game developer combo box
         game_developer_combo = self.__mount_combobox_gamedeveloper(game)
         vbox.append(game_developer_combo)
         self.__gamedeveloper_combo = game_developer_combo
 
-        #game genre combo box
+        # game genre combo box
         game_genre_combo = self.__mount_combobox_genre(game)
         vbox.append(game_genre_combo)
         self.__gamegenre_combo = game_genre_combo
 
-        #platform combo box
+        # platform combo box
         platform_combo = self.__mount_plataform_combobox(game)
         vbox.append(platform_combo)
         self.__platform_combo = platform_combo

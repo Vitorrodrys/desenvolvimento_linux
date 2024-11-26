@@ -1,4 +1,3 @@
-
 import crud
 import models
 
@@ -39,9 +38,10 @@ def registry_game_developer():
         models.GameDeveloper(name="Cygames"),
         models.GameDeveloper(name="Supergiant Games"),
         models.GameDeveloper(name="Telltale Games"),
-        ]
+    ]
     for developer in game_developers:
         crud.crud_game_developer.create(developer)
+
 
 def registry_platforms():
     if crud.crud_platform.has_data():
@@ -80,11 +80,12 @@ def registry_platforms():
     for platform in platforms:
         crud.crud_platform.create(platform)
 
-def main():
 
+def main():
     registry_game_developer()
     registry_platforms()
     app = MyApplication()
     app.run()
+
 
 main()

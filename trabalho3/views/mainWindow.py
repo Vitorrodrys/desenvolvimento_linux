@@ -1,4 +1,5 @@
 import gi
+
 gi.require_version("Gtk", "4.0")
 from gi.repository import Gtk
 
@@ -7,6 +8,8 @@ import crud
 from .default_configs import HEIGTH, WIDTH
 from .register_window import RegisterWindow
 from .update_window import UpdateWindow
+
+
 class MainWindow(Gtk.ApplicationWindow):
     def __init__(self, app):
         super().__init__(title="Biblioteca de Jogos", application=app)
@@ -52,11 +55,9 @@ class MainWindow(Gtk.ApplicationWindow):
         hboxMainContent.set_margin_end(10)
         hboxMainContent.set_margin_bottom(10)
 
-
         # Botões CRUD e área de texto
         vboxCRUDButtons = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=10)
         hboxMainContent.append(vboxCRUDButtons)
-        
 
         buttonAdicionar = Gtk.Button(label="Adicionar")
         buttonAdicionar.connect("clicked", self.on_buttonAdicionar_clicked)
@@ -82,7 +83,7 @@ class MainWindow(Gtk.ApplicationWindow):
         scroll_text.set_child(self.textview)
         vboxCRUDButtons.append(scroll_text)
 
-    def show_dialog(self, title:str, message:str, type_dialog:Gtk.MessageType):
+    def show_dialog(self, title: str, message: str, type_dialog: Gtk.MessageType):
         dialog = Gtk.MessageDialog(
             transient_for=self,
             modal=True,
@@ -91,7 +92,9 @@ class MainWindow(Gtk.ApplicationWindow):
             text=title,
         )
         dialog.set_markup(message)
-        dialog.connect("response", lambda dialog, response: dialog.destroy())  # Fechar após resposta
+        dialog.connect(
+            "response", lambda dialog, response: dialog.destroy()
+        )  # Fechar após resposta
         dialog.present()
 
     def on_buttonAdicionar_clicked(self, button):
@@ -101,14 +104,16 @@ class MainWindow(Gtk.ApplicationWindow):
     def on_buttonAtualizar_clicked(self, button):
         row = self.listbox.get_selected_row()
         if not row:
-            self.show_dialog("Erro", "Selecione um jogo para atualizar.", Gtk.MessageType.ERROR)
+            self.show_dialog(
+                "Erro", "Selecione um jogo para atualizar.", Gtk.MessageType.ERROR
+            )
             return
         game_id = row.game_id
         game = crud.crud_game.get(game_id)
         new_window = UpdateWindow(game)
         new_window.present()
 
-    def __search(self, by_game:str=""):
+    def __search(self, by_game: str = ""):
         child = self.listbox.get_first_child()
         while child is not None:
             next_child = child.get_next_sibling()  # Obter o próximo antes de remover
@@ -127,7 +132,9 @@ class MainWindow(Gtk.ApplicationWindow):
     def on_buttonRemover_clicked(self, button):
         row = self.listbox.get_selected_row()
         if not row:
-            self.show_dialog("Erro", "Selecione um jogo para remover.", Gtk.MessageType.ERROR)
+            self.show_dialog(
+                "Erro", "Selecione um jogo para remover.", Gtk.MessageType.ERROR
+            )
             return
         game_id = row.game_id
         self.__remotion(game_id)
@@ -136,7 +143,9 @@ class MainWindow(Gtk.ApplicationWindow):
         def on_dialog_response(dialog, response, game_id):
             if response == Gtk.ResponseType.YES:
                 crud.crud_game.remove(game_id)
-                self.show_dialog("Sucesso", "Jogo removido com sucesso.", Gtk.MessageType.INFO)
+                self.show_dialog(
+                    "Sucesso", "Jogo removido com sucesso.", Gtk.MessageType.INFO
+                )
             dialog.destroy()
 
         dialog = Gtk.MessageDialog(
@@ -144,11 +153,11 @@ class MainWindow(Gtk.ApplicationWindow):
             modal=True,
             message_type=Gtk.MessageType.QUESTION,
             buttons=Gtk.ButtonsType.YES_NO,
-            text="Você tem certeza que deseja remover este jogo?"
+            text="Você tem certeza que deseja remover este jogo?",
         )
-        
+
         dialog.set_markup("Esta ação não pode ser desfeita.")
-        
+
         # Conecta a resposta do diálogo
         dialog.connect("response", on_dialog_response, game_id)
         dialog.present()
@@ -160,7 +169,6 @@ class MainWindow(Gtk.ApplicationWindow):
     def on_load(self):
         self.__search()
 
-
     def on_row_selected(self, listbox, row):
         # Obter o texto do item selecionado
         label = row.get_child()
@@ -169,6 +177,7 @@ class MainWindow(Gtk.ApplicationWindow):
         # Atualizar o conteúdo da TextView
         buffer = self.textview.get_buffer()
         buffer.set_text(texto)
+
 
 class MyApplication(Gtk.Application):
     def __init__(self):

@@ -5,9 +5,8 @@ import models
 
 from .default_configs import HEIGTH, WIDTH
 
+
 class RegisterWindow(Gtk.Window):
-
-
     def __mount_combobox_gamedeveloper(self):
         game_developer_combo = Gtk.ComboBoxText()
         game_developers = crud.crud_game_developer.get_all()
@@ -59,17 +58,17 @@ class RegisterWindow(Gtk.Window):
         vbox.append(entry)
         self.__gameprice_entry = entry
 
-        #game developer combo box
+        # game developer combo box
         game_developer_combo = self.__mount_combobox_gamedeveloper()
         vbox.append(game_developer_combo)
         self.__gamedeveloper_combo = game_developer_combo
 
-        #platform combo box
+        # platform combo box
         platform_combo = self.__mount_combobox_platform()
         vbox.append(platform_combo)
         self.__platform_combo = platform_combo
 
-        #game genre combo box
+        # game genre combo box
         game_genre_combo = self.__mount_combobox_genre()
         vbox.append(game_genre_combo)
         self.__gamegenre_combo = game_genre_combo
@@ -92,7 +91,7 @@ class RegisterWindow(Gtk.Window):
             price=price,
             game_developer_id=developer_id,
             genre=genre,
-            platform_id=platform_id
+            platform_id=platform_id,
         )
         crud.crud_game.create(game)
         self.destroy()

@@ -8,6 +8,4 @@ crud_platform = CRUD(Platform)
 crud_gamedev_link = CRUD(game_gamedev_link)
 
 
-__all__ = [
-    "crud_game"
-]
+__all__ = ["crud_game"]

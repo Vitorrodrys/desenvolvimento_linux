@@ -5,8 +5,8 @@ from models import Base
 
 ModelType = TypeVar("ModelType", bound=Base)
 
-class CRUD(Generic[ModelType]):
 
+class CRUD(Generic[ModelType]):
     _db_session = create_db_session()
 
     def __init__(self, model: Type[ModelType]):
@@ -35,8 +35,12 @@ class CRUD(Generic[ModelType]):
     def has_data(self) -> bool:
         return bool(self._db_session.query(self.__model).first())
 
-    def get_by_name(self, name:str) -> list[ModelType]:
-        return self._db_session.query(self.__model).filter(self.__model.name.like(f"%{name}%")).all()
+    def get_by_name(self, name: str) -> list[ModelType]:
+        return (
+            self._db_session.query(self.__model)
+            .filter(self.__model.name.like(f"%{name}%"))
+            .all()
+        )
 
     def update(self, data: ModelType) -> ModelType:
         updated_data = self._db_session.merge(data)
