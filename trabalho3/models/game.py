@@ -27,6 +27,7 @@ class Platform(Base):
 
     id: Mapped[int] = mapped_column(primary_key=True)
     name: Mapped[str] = mapped_column(String(50), unique=True)
+    games: Mapped[list["Game"]] = relationship("Game", back_populates="platform")
 
 game_gamedev_link = Table(
     'game_gamedev_link',
@@ -53,3 +54,5 @@ class Game(Base):
     genre: Mapped[GameGenre] = mapped_column(String(50))
     description: Mapped[Optional[str]] = mapped_column(String(500))
     price: Mapped[float] = mapped_column(Float())
+    platform_id: Mapped[int] = mapped_column(ForeignKey("platforms.id"))
+    platform: Mapped["Platform"] = relationship("Platform", back_populates="games")

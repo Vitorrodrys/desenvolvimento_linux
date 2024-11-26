@@ -3,10 +3,10 @@ gi.require_version("Gtk", "4.0")
 from gi.repository import Gtk
 
 import crud
-import models
 
 from .default_configs import HEIGTH, WIDTH
 from .register_window import RegisterWindow
+from .update_window import UpdateWindow
 class MainWindow(Gtk.ApplicationWindow):
     def __init__(self, app):
         super().__init__(title="Biblioteca de Jogos", application=app)
@@ -62,7 +62,12 @@ class MainWindow(Gtk.ApplicationWindow):
         buttonAdicionar.connect("clicked", self.on_buttonAdicionar_clicked)
         vboxCRUDButtons.append(buttonAdicionar)
 
+        buttonAtualizar = Gtk.Button(label="Atualizar")
+        buttonAtualizar.connect("clicked", self.on_buttonAtualizar_clicked)
+        vboxCRUDButtons.append(buttonAtualizar)
+
         buttonRemover = Gtk.Button(label="Remover")
+        buttonRemover.connect("clicked", self.on_buttonRemover_clicked)
         vboxCRUDButtons.append(buttonRemover)
 
         # Caixa de texto para informações do jogo
@@ -77,36 +82,83 @@ class MainWindow(Gtk.ApplicationWindow):
         scroll_text.set_child(self.textview)
         vboxCRUDButtons.append(scroll_text)
 
-        
+    def show_dialog(self, title:str, message:str, type_dialog:Gtk.MessageType):
+        dialog = Gtk.MessageDialog(
+            transient_for=self,
+            modal=True,
+            message_type=type_dialog,
+            buttons=Gtk.ButtonsType.OK,
+            text=title,
+        )
+        dialog.set_markup(message)
+        dialog.connect("response", lambda dialog, response: dialog.destroy())  # Fechar após resposta
+        dialog.present()
 
     def on_buttonAdicionar_clicked(self, button):
         new_window = RegisterWindow()
         new_window.present()
-        
-    def on_buttonBuscar_clicked(self, button):
+
+    def on_buttonAtualizar_clicked(self, button):
+        row = self.listbox.get_selected_row()
+        if not row:
+            self.show_dialog("Erro", "Selecione um jogo para atualizar.", Gtk.MessageType.ERROR)
+            return
+        game_id = row.game_id
+        game = crud.crud_game.get(game_id)
+        new_window = UpdateWindow(game)
+        new_window.present()
+
+    def __search(self, by_game:str=""):
         child = self.listbox.get_first_child()
         while child is not None:
             next_child = child.get_next_sibling()  # Obter o próximo antes de remover
             self.listbox.remove(child)  # Remover o filho atual
             child = next_child
-        
-        entryText = self.entry.get_text()
-        games = crud.crud_game.get_by_name(entryText)
+
+        games = crud.crud_game.get_by_name(by_game)
         # Adicionar itens de exemplo à lista de jogos
         for game in games:  # Exemplo com 20 jogos
             row = Gtk.ListBoxRow()
             label = Gtk.Label(label=game.name, xalign=0)
             row.set_child(label)
+            row.game_id = game.id
             self.listbox.append(row)
 
+    def on_buttonRemover_clicked(self, button):
+        row = self.listbox.get_selected_row()
+        if not row:
+            self.show_dialog("Erro", "Selecione um jogo para remover.", Gtk.MessageType.ERROR)
+            return
+        game_id = row.game_id
+        self.__remotion(game_id)
+
+    def __remotion(self, game_id: int):
+        def on_dialog_response(dialog, response, game_id):
+            if response == Gtk.ResponseType.YES:
+                crud.crud_game.remove(game_id)
+                self.show_dialog("Sucesso", "Jogo removido com sucesso.", Gtk.MessageType.INFO)
+            dialog.destroy()
+
+        dialog = Gtk.MessageDialog(
+            transient_for=self,
+            modal=True,
+            message_type=Gtk.MessageType.QUESTION,
+            buttons=Gtk.ButtonsType.YES_NO,
+            text="Você tem certeza que deseja remover este jogo?"
+        )
+        
+        dialog.set_markup("Esta ação não pode ser desfeita.")
+        
+        # Conecta a resposta do diálogo
+        dialog.connect("response", on_dialog_response, game_id)
+        dialog.present()
+
+    def on_buttonBuscar_clicked(self, button):
+        entryText = self.entry.get_text()
+        self.__search(entryText)
+
     def on_load(self):
-        games = crud.crud_game.get_all()
-        # Adicionar itens de exemplo à lista de jogos
-        for game in games:  # Exemplo com 20 jogos
-            row = Gtk.ListBoxRow()
-            label = Gtk.Label(label=game.name, xalign=0)
-            row.set_child(label)
-            self.listbox.append(row)
+        self.__search()
 
 
     def on_row_selected(self, listbox, row):

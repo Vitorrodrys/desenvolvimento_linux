@@ -32,7 +32,10 @@ class CRUD(Generic[ModelType]):
     def get_all(self) -> list[ModelType]:
         return self._db_session.query(self.__model).all()
 
-    def get_by_name(self, name:str) -> ModelType:
+    def has_data(self) -> bool:
+        return bool(self._db_session.query(self.__model).first())
+
+    def get_by_name(self, name:str) -> list[ModelType]:
         return self._db_session.query(self.__model).filter(self.__model.name.like(f"%{name}%")).all()
 
     def update(self, data: ModelType) -> ModelType:
