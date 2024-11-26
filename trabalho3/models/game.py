@@ -31,14 +31,6 @@ class Platform(Base):
     games: Mapped[list["Game"]] = relationship("Game", back_populates="platform")
 
 
-game_gamedev_link = Table(
-    "game_gamedev_link",
-    Base.metadata,
-    Column("game_id", Integer, ForeignKey("games.id")),
-    Column("game_developer_id", Integer, ForeignKey("game_developers.id")),
-)
-
-
 class GameDeveloper(Base):
     __tablename__ = "game_developers"
 
