@@ -1,4 +1,5 @@
 from gi.repository import Gtk
+from gi.repository import GObject
 
 import crud
 import models
@@ -7,6 +8,9 @@ from .default_configs import HEIGTH, WIDTH
 
 
 class RegisterWindow(Gtk.Window):
+    __gsignals__ = {
+        "game-added": (GObject.SignalFlags.RUN_FIRST, None, ())
+    }
     def __mount_combobox_gamedeveloper(self):
         game_developer_combo = Gtk.ComboBoxText()
         game_developers = crud.crud_game_developer.get_all()
@@ -94,4 +98,5 @@ class RegisterWindow(Gtk.Window):
             platform_id=platform_id,
         )
         crud.crud_game.create(game)
+        self.emit("game-added")
         self.destroy()

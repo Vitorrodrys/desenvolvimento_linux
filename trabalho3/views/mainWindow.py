@@ -99,6 +99,7 @@ class MainWindow(Gtk.ApplicationWindow):
 
     def on_buttonAdicionar_clicked(self, button):
         new_window = RegisterWindow()
+        new_window.connect("game-added", lambda _: self.__search())
         new_window.present()
 
     def on_buttonAtualizar_clicked(self, button):
@@ -111,7 +112,13 @@ class MainWindow(Gtk.ApplicationWindow):
         game_id = row.game_id
         game = crud.crud_game.get(game_id)
         new_window = UpdateWindow(game)
+        new_window.connect("game-modified", lambda _: self.__search())
+        new_window.connect("game-modified", lambda _: self.__limpaTextView())
         new_window.present()
+    
+    def __limpaTextView(self):
+        buffer = self.textview.get_buffer()
+        buffer.set_text("")
 
     def __search(self, by_game: str = ""):
         child = self.listbox.get_first_child()
@@ -143,6 +150,14 @@ class MainWindow(Gtk.ApplicationWindow):
         def on_dialog_response(dialog, response, game_id):
             if response == Gtk.ResponseType.YES:
                 crud.crud_game.remove(game_id)
+                
+                # Remove a linha correspondente da listbox
+                row = self.listbox.get_selected_row()
+                if row:
+                    self.listbox.remove(row)
+
+                self.__limpaTextView()
+
                 self.show_dialog(
                     "Sucesso", "Jogo removido com sucesso.", Gtk.MessageType.INFO
                 )
@@ -170,11 +185,29 @@ class MainWindow(Gtk.ApplicationWindow):
         self.__search()
 
     def on_row_selected(self, listbox, row):
-        # Obter o texto do item selecionado
-        label = row.get_child()
-        texto = f"Informações do jogo selecionado:\n\n{label.get_text()}"
-
-        # Atualizar o conteúdo da TextView
+        if not row:
+            return
+        
+        game_id = row.game_id
+        
+        game = crud.crud_game.get(game_id)
+        
+        if not game:
+            self.show_dialog(
+                "Erro", "Não foi possível encontrar os dados do jogo selecionado.", Gtk.MessageType.ERROR
+            )
+            return
+        
+        texto = (
+            f"Informações do jogo selecionado:\n\n"
+            f"Nome: {game.name}\n"
+            f"Descrição: {game.description}\n"
+            f"Gênero: {game.genre}\n"
+            f"Plataforma: {game.platform.name}\n"
+            f"Desenvolvedora: {game.game_developer.name}\n"
+            f"Preço: {game.price}"
+        )
+        
         buffer = self.textview.get_buffer()
         buffer.set_text(texto)
 

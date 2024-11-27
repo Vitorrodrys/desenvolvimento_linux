@@ -1,4 +1,5 @@
 from gi.repository import Gtk
+from gi.repository import GObject
 
 import crud
 import models
@@ -7,6 +8,9 @@ from .default_configs import HEIGTH, WIDTH
 
 
 class UpdateWindow(Gtk.Window):
+    __gsignals__ = {
+        "game-modified": (GObject.SignalFlags.RUN_FIRST, None, ())
+    }
     def __mount_combobox_gamedeveloper(self, game: models.Game):
         game_developer_combo = Gtk.ComboBoxText()
         game_developers = crud.crud_game_developer.get_all()
@@ -96,4 +100,5 @@ class UpdateWindow(Gtk.Window):
         self.__game.game_developer_id = developer_id
         self.__game.genre = genre
         crud.crud_game.update(self.__game)
+        self.emit("game-modified")
         self.destroy()
