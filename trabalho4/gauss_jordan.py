@@ -1,7 +1,21 @@
 import numpy
 
 
-def find_a_row_with_non_zero_element_in_pivo_column(augmented_matrix: numpy.ndarray[float], pivo_index: float) -> float:
+class GaussJordanError(ValueError):
+    pass
+
+
+class GaussJordanSingularMatrixError(GaussJordanError):
+    pass
+
+
+class GaussJordanInvalidMatrixError(GaussJordanError):
+    pass
+
+
+def find_a_row_with_non_zero_element_in_pivo_column(
+    augmented_matrix: numpy.ndarray[float], pivo_index: float
+) -> float:
     """
     Find a row with a non-zero element in the pivo column
     """
@@ -9,6 +23,7 @@ def find_a_row_with_non_zero_element_in_pivo_column(augmented_matrix: numpy.ndar
         if row[pivo_index] != 0:
             return index
     raise RuntimeError("There is no row with a non-zero element in the pivo column")
+
 
 def check_diagonal_elements_with_zeros(augmented_matrix: numpy.ndarray[float]) -> None:
     """
@@ -19,16 +34,24 @@ def check_diagonal_elements_with_zeros(augmented_matrix: numpy.ndarray[float]) -
     index = 0
     while index < augmented_matrix.shape[0]:
         if augmented_matrix[index][index] == 0:
-            row_to_change = find_a_row_with_non_zero_element_in_pivo_column(augmented_matrix, index)
-            augmented_matrix[[index, row_to_change]] = augmented_matrix[[row_to_change, index]]
+            row_to_change = find_a_row_with_non_zero_element_in_pivo_column(
+                augmented_matrix, index
+            )
+            augmented_matrix[[index, row_to_change]] = augmented_matrix[
+                [row_to_change, index]
+            ]
         index += 1
 
-def fill_with_zero_by_pivo(augmented_matrix: numpy.ndarray[float]) -> numpy.ndarray[float]:
+
+def fill_with_zero_by_pivo(
+    augmented_matrix: numpy.ndarray[float],
+) -> numpy.ndarray[float]:
     """
     Fill the augmented matrix with zeros below and above the main diagonal
     using the pivo element
     """
-    def calculate_scalar_multiplication(pivo: float, original_element:float)->int:
+
+    def calculate_scalar_multiplication(pivo: float, original_element: float) -> int:
         return original_element / pivo
 
     check_diagonal_elements_with_zeros(augmented_matrix)
@@ -36,12 +59,15 @@ def fill_with_zero_by_pivo(augmented_matrix: numpy.ndarray[float]) -> numpy.ndar
     for i, row in enumerate(augmented_matrix):
         for j, row_to_fill in enumerate(augmented_matrix):
             if i != j and row_to_fill[pivo_index] != 0:
-                #calculate the scalar to multiply by pivo row and subtract from the row to fill
-                scalar_multiplication = calculate_scalar_multiplication(row[pivo_index], row_to_fill[pivo_index])
-                #subtract the row multiplied by the scalar from the row to fill
-                #to make the element in the pivo column zero
+                # calculate the scalar to multiply by pivo row and subtract from the row to fill
+                scalar_multiplication = calculate_scalar_multiplication(
+                    row[pivo_index], row_to_fill[pivo_index]
+                )
+                # subtract the row multiplied by the scalar from the row to fill
+                # to make the element in the pivo column zero
                 augmented_matrix[j] = row_to_fill - scalar_multiplication * row
         pivo_index += 1
+
 
 def fill_main_diagonal_with_ones(augmented_matrix: numpy.ndarray[float]) -> None:
     """
@@ -52,7 +78,9 @@ def fill_main_diagonal_with_ones(augmented_matrix: numpy.ndarray[float]) -> None
             augmented_matrix[i] = row / row[i]
 
 
-def gauss_jordan_equivalent(aumented_matrix: numpy.ndarray[float]) -> numpy.ndarray[float]:
+def gauss_jordan_equivalent(
+    aumented_matrix: numpy.ndarray[float],
+) -> numpy.ndarray[float]:
     """
     Calculate the equivalent matrix with zeros outside the main diagonal
     of the augmented matrix using the Gauss-Jordan method
@@ -62,7 +90,7 @@ def gauss_jordan_equivalent(aumented_matrix: numpy.ndarray[float]) -> numpy.ndar
     return aumented_matrix
 
 
-def gauss_jordan(coefficients: list[list[float]], results: list[float])-> list[float]:
+def gauss_jordan(coefficients: list[list[float]], results: list[float]) -> list[float]:
     """
     Calculate the variable matrix that solve a system composed by the coefficients and results
     if the system doens't has solution, will be raise a ValueError exception
@@ -71,12 +99,16 @@ def gauss_jordan(coefficients: list[list[float]], results: list[float])-> list[f
     """
 
     if len(coefficients) != len(results):
-        raise ValueError("The number of coefficients must be the same as the number of results")
+        raise GaussJordanInvalidMatrixError(
+            "The number of coefficients must be the same as the number of results"
+        )
     mcf = numpy.array(coefficients, dtype=float)
     mr = numpy.array(results, dtype=float)
     augmented_matrix = numpy.column_stack((mcf, mr))
 
     if numpy.linalg.det(mcf) == 0:
-        raise ValueError("The determinant of the matrix must be different from 0")
+        raise GaussJordanSingularMatrixError(
+            "The determinant of the matrix must be different from 0"
+        )
     augmented_matrix = gauss_jordan_equivalent(augmented_matrix)
     return [float(xvalue) for xvalue in augmented_matrix[:, -1]]
