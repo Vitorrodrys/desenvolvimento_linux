@@ -51,7 +51,7 @@ def fill_with_zero_by_pivo(
     using the pivo element
     """
 
-    def calculate_scalar_multiplication(pivo: float, original_element: float) -> int:
+    def calculate_scalar_multiplication(pivo: float, original_element: float) -> float:
         return original_element / pivo
 
     check_diagonal_elements_with_zeros(augmented_matrix)
