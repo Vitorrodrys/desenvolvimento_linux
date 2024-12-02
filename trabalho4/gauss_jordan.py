@@ -1,3 +1,4 @@
+import logging
 import numpy
 
 
@@ -40,6 +41,8 @@ def check_diagonal_elements_with_zeros(augmented_matrix: numpy.ndarray[float]) -
             augmented_matrix[[index, row_to_change]] = augmented_matrix[
                 [row_to_change, index]
             ]
+            logging.info("swapping rows %d and %d", index, row_to_change)
+            logging.info("new augmented matrix: \n%s", augmented_matrix)
         index += 1
 
 
@@ -66,6 +69,8 @@ def fill_with_zero_by_pivo(
                 # subtract the row multiplied by the scalar from the row to fill
                 # to make the element in the pivo column zero
                 augmented_matrix[j] = row_to_fill - scalar_multiplication * row
+                logging.info("subtracting row %d from row %d multiplied by %f", i, j, scalar_multiplication)
+                logging.info("new augmented matrix: \n%s", augmented_matrix)
         pivo_index += 1
 
 
@@ -76,6 +81,8 @@ def fill_main_diagonal_with_ones(augmented_matrix: numpy.ndarray[float]) -> None
     for i, row in enumerate(augmented_matrix):
         if row[i] != 1:
             augmented_matrix[i] = row / row[i]
+            logging.info("dividing row %d by %f", i, row[i])
+            logging.info("new augmented matrix: \n%s", augmented_matrix)
 
 
 def gauss_jordan_equivalent(
@@ -90,7 +97,7 @@ def gauss_jordan_equivalent(
     return aumented_matrix
 
 
-def gauss_jordan(coefficients: list[list[float]], results: list[float]) -> list[float]:
+def gauss_jordan(coefficients: list[list[float]], results: list[float]) -> numpy.ndarray[float]:
     """
     Calculate the variable matrix that solve a system composed by the coefficients and results
     if the system doens't has solution, will be raise a ValueError exception
@@ -110,5 +117,9 @@ def gauss_jordan(coefficients: list[list[float]], results: list[float]) -> list[
         raise GaussJordanSingularMatrixError(
             "The determinant of the matrix must be different from 0"
         )
+    logging.info("initial augmented matrix: \n%s", augmented_matrix)
     augmented_matrix = gauss_jordan_equivalent(augmented_matrix)
-    return [float(xvalue) for xvalue in augmented_matrix[:, -1]]
+    result = augmented_matrix[:, -1]
+    logging.info("final augmented matrix: \n%s", augmented_matrix)
+    logging.info("result: %s", result)
+    return result

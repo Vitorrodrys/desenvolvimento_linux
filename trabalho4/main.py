@@ -1,5 +1,5 @@
 import argparse
-
+import logging
 
 from gauss_jordan import (
     gauss_jordan,
@@ -30,6 +30,13 @@ def create_parser():
         required=True,
         help="Results vector, given as a list of real numbers separated by commas. Example: 1,2",
     )
+    parser.add_argument(
+        "--show-steps",
+        action="store_true",
+        required=False,
+        default=False,
+        help="Show intermediate steps of the algorithm",
+    )
     return parser
 
 
@@ -40,6 +47,13 @@ def main():
     coefficients = args.coefficients
     results = args.results
 
+    if args.show_steps:
+        logging.basicConfig(level=logging.INFO)
+        handler = logging.StreamHandler()
+        handler.setFormatter(logging.Formatter("\n%(message)s\n"))
+        log_handler = logging.getLogger()
+        log_handler.handlers.clear()
+        log_handler.addHandler(handler)
     try:
         output = gauss_jordan(coefficients, results)
     except GaussJordanInvalidMatrixError:
