@@ -1,5 +1,6 @@
 import argparse
 import logging
+from scipy.linalg import solve
 
 from gauss_jordan import (
     gauss_jordan,
@@ -47,13 +48,13 @@ def main():
     coefficients = args.coefficients
     results = args.results
 
-    if args.show_steps:
-        logging.basicConfig(level=logging.INFO)
-        handler = logging.StreamHandler()
-        handler.setFormatter(logging.Formatter("\n%(message)s\n"))
-        log_handler = logging.getLogger()
-        log_handler.handlers.clear()
-        log_handler.addHandler(handler)
+    print("Calculando com numpy: \n")
+    logging.basicConfig(level=logging.INFO)
+    handler = logging.StreamHandler()
+    handler.setFormatter(logging.Formatter("\n%(message)s\n"))
+    log_handler = logging.getLogger()
+    log_handler.handlers.clear()
+    log_handler.addHandler(handler)
     try:
         output = gauss_jordan(coefficients, results)
     except GaussJordanInvalidMatrixError:
@@ -64,7 +65,8 @@ def main():
     except GaussJordanSingularMatrixError:
         print("The determinant of the matrix must be different from 0")
         return
-    print("Output:", output)
+    print("\n"*3)
+    print("Calculando com scipy: \n", solve(coefficients, results))
 
 
 if __name__ == "__main__":
