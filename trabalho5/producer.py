@@ -7,13 +7,13 @@ class Producer():
     def __init__(self, stock: Stock, id: int):
         self.stock = stock
         self.id = id
-        threading.Thread(self.__worker()).start()
+        threading.Thread(target=self.__worker).start()
 
     def produce(self):
         nextID = self.stock.get_next_id()
         self.stock.put((self.id, nextID))
 
-        print(f"Producer {self.id} added item {nextID} to stock")
+        print(f"Producer {self.id} added item {nextID} to stock\n")
 
     def __worker(self):
         while True:

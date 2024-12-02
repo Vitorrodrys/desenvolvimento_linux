@@ -23,4 +23,4 @@ class Consumer:
             wait_time = random.randint(1, 3)
             time.sleep(wait_time)
             item = self.__stock.get()
-            print(f"{self.__name} finished consuming the item: {item}")
+            print(f"{self.__name} finished consuming the item: {item}\n")
