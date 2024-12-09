@@ -57,14 +57,20 @@ class Board:
             self.down_right(i, j),
         ]
 
+    def __build_matrix(self, rows: int, cols: int) -> list[list[bool]]:
+        return [[False for _ in range(rows)] for _ in range(cols)]
+
     def __init__(
         self,
         rows: int,
         columns: int,
     ) -> None:
-        self.__board = [[False] * columns] * rows
+        self.__board = self.__build_matrix(rows, columns)
         self.__rows = rows
         self.__columns = columns
+
+    def clear(self):
+        self.__board = self.__build_matrix(self.__rows, self.__columns)
 
     def swap_value(self, i: int, j: int):
         self.__board[i][j] = not self.__board[i][j]
@@ -90,9 +96,9 @@ class Board:
     def step(self):
         relife_list, kill_list = self.check()
         for i, j in relife_list:
-            self.swap_value(i, j)
+            self.__board[i][j] =True
         for i, j in kill_list:
-            self.swap_value(i, j)
+            self.__board[i][j] = False
 
     def get_board_matrix(self):
         return self.__board

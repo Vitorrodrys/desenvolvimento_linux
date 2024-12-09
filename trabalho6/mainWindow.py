@@ -5,11 +5,14 @@ gi.require_version("Gtk", "4.0")
 from gi.repository import Gtk, Gdk
 
 
+
+ROWS = 30
+COLUMNS = 30
 class GridApp(Gtk.ApplicationWindow):
     def __init__(self, app):
         super().__init__(application=app, title="Jogo da Vida")  # Definindo o título aqui
         self.set_default_size(400, 400)
-        self.board = Board(16, 16)
+        self.board = Board(COLUMNS, COLUMNS)
 
         # Criação do grid
         grid = Gtk.Grid()
@@ -18,8 +21,8 @@ class GridApp(Gtk.ApplicationWindow):
         vbox.append(grid)
 
         # Loop para criar o grid 16x16
-        for row in range(16):
-            for col in range(16):
+        for row in range(ROWS):
+            for col in range(COLUMNS):
                 button = Gtk.Button()
                 button.add_css_class("grid-button")  # Classe CSS para o botão
                 button.row = row  # Adiciona a linha como atributo
@@ -54,8 +57,8 @@ class GridApp(Gtk.ApplicationWindow):
         matriz = self.board.get_board_matrix()
 
         grid = self.grid
-        for row in range(16):
-            for col in range(16):
+        for row in range(ROWS):
+            for col in range(COLUMNS):
                 button = grid.get_child_at(col, row)  # Recupera o botão específico da célula
                 if matriz[row][col]:
                     if "selected" not in button.get_css_classes():
