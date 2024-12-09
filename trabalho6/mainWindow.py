@@ -11,14 +11,16 @@ class GridApp(Gtk.Application):
         window = Gtk.ApplicationWindow(application=self)
         window.set_title("Grid 16x16")
         window.set_default_size(400, 400)
-        window.set_margin_top(10)
-        window.set_margin_bottom(10)
-        window.set_margin_start(10)
-        window.set_margin_end(10)
+        # window.set_margin_top(10)
+        # window.set_margin_bottom(10)
+        # window.set_margin_start(10)
+        # window.set_margin_end(10)
 
         # Criação do grid
         grid = Gtk.Grid()
-        window.set_child(grid)
+        vbox = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=10)
+        window.set_child(vbox)
+        vbox.append(grid)
 
         # Loop para criar o grid 16x16
         for row in range(16):
@@ -27,6 +29,15 @@ class GridApp(Gtk.Application):
                 button.add_css_class("grid-button")  # Classe CSS para o botão
                 button.connect("clicked", self.on_button_clicked)
                 grid.attach(button, col, row, 1, 1)
+
+        hboxBotao = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=10)
+        vbox.append(hboxBotao)
+
+        hboxBotao.set_margin_top(10)
+
+        buttonGerar = Gtk.Button(label="Gerar")
+        buttonGerar.connect("clicked", self.on_buttonGerar_clicked)
+        hboxBotao.append(buttonGerar)
 
         # Exibe a janela
         window.show()
@@ -37,6 +48,9 @@ class GridApp(Gtk.Application):
             button.remove_css_class("selected")
         else:
             button.add_css_class("selected")
+
+    def on_buttonGerar_clicked(self, button):
+        pass
 
 
 # Estilo CSS para controlar a cor
