@@ -89,3 +89,14 @@ class Board:
                 elif sum_neighbours == 2:
                     pass
                     #keep
+        return relife_list, kill_list
+
+    def step(self):
+        relife_list, kill_list = self.check()
+        for i,j in relife_list:
+            self.swap_value(i,j)
+        for i,j in kill_list:
+            self.swap_value(i,j)
+
+    def get_board_matrix(self):
+        return self.__board
