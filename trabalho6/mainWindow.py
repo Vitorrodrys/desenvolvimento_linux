@@ -1,14 +1,17 @@
 import gi
 from board import Board
+import threading
+import time
 
 gi.require_version("Gtk", "4.0")
 from gi.repository import Gtk, Gdk
 
 
 
-ROWS = 30
-COLUMNS = 30
+ROWS = 16
+COLUMNS = 16
 class GridApp(Gtk.ApplicationWindow):
+        
     def __init__(self, app):
         super().__init__(application=app, title="Jogo da Vida")  # Definindo o título aqui
         self.set_default_size(400, 400)
@@ -31,13 +34,21 @@ class GridApp(Gtk.ApplicationWindow):
                 grid.attach(button, col, row, 1, 1)
 
         # Adicionando o botão "Gerar"
-        hboxBotao = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=10)
-        vbox.append(hboxBotao)
-        hboxBotao.set_margin_top(10)
+        hboxBotoes = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=10)
+        vbox.append(hboxBotoes)
+        hboxBotoes.set_margin_top(10)
 
         buttonGerar = Gtk.Button(label="Gerar")
         buttonGerar.connect("clicked", self.on_buttonGerar_clicked)
-        hboxBotao.append(buttonGerar)
+        hboxBotoes.append(buttonGerar)
+
+        buttonGerarAuto = Gtk.Button(label="Gerar Auto")
+        buttonGerarAuto.connect("clicked", self.on_buttonGerarAuto_clicked)
+        hboxBotoes.append(buttonGerarAuto)
+
+        buttonLimpar = Gtk.Button(label="Limpar")
+        buttonLimpar.connect("clicked", self.on_buttonLimpar_clicked)
+        hboxBotoes.append(buttonLimpar)
 
         self.grid = grid
 
@@ -53,6 +64,19 @@ class GridApp(Gtk.ApplicationWindow):
             button.add_css_class("selected")
 
     def on_buttonGerar_clicked(self, button):
+        self.atualizaMatriz(button=button)
+    
+    def on_buttonLimpar_clicked(self, button):
+        self.board.clear()
+        self.atualizaMatriz(button=button)
+    
+    def on_buttonGerarAuto_clicked(self, button):
+        while True:
+            time.sleep(1)
+            self.atualizaMatriz(button=button)
+
+
+    def atualizaMatriz(self, button):
         self.board.step()
         matriz = self.board.get_board_matrix()
 
@@ -66,6 +90,7 @@ class GridApp(Gtk.ApplicationWindow):
                 else:
                     if "selected" in button.get_css_classes():
                         button.remove_css_class("selected")  # Remove a classe "selected" se o valor for False
+
 
 
 # Estilo CSS para controlar a cor
