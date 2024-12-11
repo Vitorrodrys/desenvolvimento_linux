@@ -16,6 +16,8 @@ class GridApp(Gtk.ApplicationWindow):
         super().__init__(application=app, title="Jogo da Vida")  # Definindo o título aqui
         self.set_default_size(400, 400)
         self.board = Board(COLUMNS, COLUMNS)
+        self.thread = None
+        self.notify_end = None
 
         # Criação do grid
         grid = Gtk.Grid()
@@ -71,9 +73,20 @@ class GridApp(Gtk.ApplicationWindow):
         self.atualizaMatriz(button=button)
     
     def on_buttonGerarAuto_clicked(self, button):
-        while True:
-            time.sleep(1)
-            self.atualizaMatriz(button=button)
+        def simulate_all():
+                
+            while not self.notify_end.is_set():
+                time.sleep(0.5)
+                self.atualizaMatriz(button=button)
+        if self.thread:
+            self.notify_end.set()
+            self.thread.join()
+            self.thread = None
+            self.notify_end = None
+            return
+        self.notify_end = threading.Event()
+        self.thread = threading.Thread(target=simulate_all)
+        self.thread.start()
 
 
     def atualizaMatriz(self, button):
