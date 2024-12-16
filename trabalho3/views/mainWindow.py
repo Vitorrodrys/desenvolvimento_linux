@@ -99,6 +99,11 @@ class MainWindow(Gtk.ApplicationWindow):
             row.set_child(label)
             self.listbox.append(row)
 
+    def do_activate(self):
+        win = MainWindow(self)
+        win.present()
+        win.on_load()
+
     def on_load(self):
         games = crud.crud_game.get_all()
         # Adicionar itens de exemplo à lista de jogos
